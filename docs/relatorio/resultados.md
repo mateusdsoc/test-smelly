@@ -73,3 +73,39 @@ Risco: dá uma falsa sensação de cobertura, e o TODO tende a ficar esquecido.
   - `jest/no-conditional-expect`: error
   - `jest/no-identical-title`: error
 - Os testes continuam passando depois da instalação
+
+## Etapa 4: Detecção automática (primeira execução do ESLint)
+
+Comando: `npx eslint .`
+
+Resultado: **6 problemas (4 erros, 2 avisos)**, todos em `test/userService.smelly.test.js`. O `src/userService.js` não teve nenhum apontamento.
+
+| Linha | Tipo | Regra | Mensagem | Teste |
+|---|---|---|---|---|
+| 44:9 | erro | jest/no-conditional-expect | Avoid calling `expect` conditionally | deve desativar usuários... |
+| 46:9 | erro | jest/no-conditional-expect | Avoid calling `expect` conditionally | deve desativar usuários... |
+| 49:9 | erro | jest/no-conditional-expect | Avoid calling `expect` conditionally | deve desativar usuários... |
+| 73:7 | erro | jest/no-conditional-expect | Avoid calling `expect` conditionally | deve falhar ao criar usuário menor de idade |
+| 77:3 | aviso | jest/no-disabled-tests | Tests should not be skipped | deve retornar uma lista vazia... |
+| 77:3 | aviso | jest/expect-expect | Test has no assertions | deve retornar uma lista vazia... |
+
+Print: [prints/03-eslint-inicial.png](prints/03-eslint-inicial.png)
+
+### Comparação com a análise manual
+
+| Smell (análise manual) | ESLint detectou? | Como |
+|---|---|---|
+| 1. Eager Test | Não | Nenhuma regra do `recommended` conta quantos "Act" ou quantos `expect` um teste tem |
+| 2. Lógica Condicional | Sim | `no-conditional-expect` nas linhas 44, 46 e 49 (`expect` dentro do `if/else`) |
+| 3. Teste Frágil | Não | O linter não sabe se a string comparada é um detalhe de formatação ou uma regra de negócio |
+| 4. try/catch | Sim | `no-conditional-expect` na linha 73 (`expect` dentro do `catch`) |
+| 5. Teste Desativado / Vazio | Sim | `no-disabled-tests` (o `skip`) e `expect-expect` (corpo sem `expect`) |
+
+### Observações
+
+- A ferramenta pegou 3 dos 5 smells sem nenhum esforço manual, apontando a linha e a regra exata. Pegou justamente os que dá para reconhecer pela estrutura do código: `expect` dentro de `if`/`catch` e teste sem `expect`.
+- A mesma regra (`no-conditional-expect`) pegou dois smells diferentes: a lógica condicional e o try/catch. Para o linter os dois são o mesmo problema: um `expect` que pode não rodar.
+- O `expect-expect` não estava listado no `.eslintrc.json` do enunciado. Ele veio do `plugin:jest/recommended`.
+- O `for` da linha 40 não foi apontado sozinho. A regra só reclama dos `expect` que estão dentro do `if`.
+- Eager Test e Teste Frágil dependem de entender a intenção do teste, então ainda precisam de análise manual. A ferramenta ajuda, mas não substitui a revisão.
+- O teste com try/catch é o caso mais grave (como foi comprovado na etapa 2), e o linter marca ele como **erro**, e não só como aviso.
