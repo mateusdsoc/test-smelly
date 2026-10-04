@@ -207,3 +207,35 @@ Alternativa: o teste do try/catch (linhas 66-75), que é o mais grave, mas a mud
 ### Observação sobre o ESLint neste ambiente
 
 Como a pasta de trabalho do Claude fica dentro do repositório principal, o ESLint 8 lia também o `.eslintrc.json` da pasta de cima e dava conflito de plugin. Aqui rodei com `npx eslint --no-eslintrc -c .eslintrc.json .`. Num clone normal, `npx eslint .` funciona direto. Não precisa ir para o relatório.
+
+## Etapa 6: Validação final
+
+Rodado num clone limpo da branch, com `npm install` e os comandos do enunciado, sem nenhum ajuste.
+
+### ESLint
+
+- `npx eslint test/userService.clean.test.js`: **nenhum erro e nenhum aviso** (saída vazia, código de saída 0)
+- `npx eslint .`: os mesmos 6 problemas da primeira execução, todos no `userService.smelly.test.js`, que não podia ser alterado. O arquivo clean não aparece na lista.
+
+| Arquivo | Erros | Avisos |
+|---|---|---|
+| userService.smelly.test.js | 4 | 2 |
+| userService.clean.test.js | 0 | 0 |
+
+Print: [prints/06-eslint-final.png](prints/06-eslint-final.png)
+
+### Testes
+
+`npm test`: **2 suítes passaram, 20 testes passaram e 1 foi pulado** (o `test.skip` do arquivo original). Os 16 testes do clean passaram e os 4 do smelly continuam passando, então a refatoração não quebrou nada.
+
+Print: [prints/07-npm-test-final.png](prints/07-npm-test-final.png)
+
+### Antes x depois
+
+| | smelly | clean |
+|---|---|---|
+| Testes | 5 (1 pulado) | 16 |
+| Problemas no ESLint | 6 (4 erros, 2 avisos) | 0 |
+| `if`/`for` dentro dos testes | sim | não |
+| Pega a remoção da validação de idade | não | sim |
+| Pega a troca de `<` por `<=` no limite de 18 | não | sim |
