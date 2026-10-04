@@ -62,3 +62,14 @@ Risco: dá uma falsa sensação de cobertura, e o TODO tende a ficar esquecido.
 - O `beforeEach` chama `_clearDB()`, um método "interno" (com `_`) que só existe por causa dos testes. O teste depende de um detalhe da implementação.
 - Comportamentos sem teste: campos obrigatórios (nome, email, idade), `getUserById` com id inexistente retornando `null`, `deactivateUser` com id inexistente, relatório vazio e o valor padrão de `isAdmin`.
 - Os comentários "Act 1" e "Act 2" mostram que o teste não segue o padrão AAA (um Arrange, um Act, um Assert).
+
+## Etapa 3: Configuração do ESLint
+
+- Instalado com `npm install --save-dev eslint@8 eslint-plugin-jest` (ESLint 8.57.1 e eslint-plugin-jest 29.16.6)
+- Usei a versão 8 porque a 9 em diante não lê mais `.eslintrc.json` por padrão (usa `eslint.config.js`), e o enunciado pede o `.eslintrc.json`
+- `.eslintrc.json` criado na raiz com o conteúdo do enunciado:
+  - `eslint:recommended` + `plugin:jest/recommended`
+  - `jest/no-disabled-tests`: warn
+  - `jest/no-conditional-expect`: error
+  - `jest/no-identical-title`: error
+- Os testes continuam passando depois da instalação
